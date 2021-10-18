@@ -1,4 +1,5 @@
-pub mod coffe_machine {
+pub mod coffee_machine {
+
     pub enum DrinkType {
         Tea,
         Coffee,
@@ -24,6 +25,11 @@ pub mod coffe_machine {
         format!("{}:{}:{}", drink_code, sugars, spoon)
     }
 
+    pub fn process_message(message: String) -> String {
+        format!("M:{}", message)
+    }
+
+    // Private Methods
     fn get_drink_code(drink_type: DrinkType) -> &'static str {
         match drink_type {
             DrinkType::Tea => "T",

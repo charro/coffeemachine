@@ -1,8 +1,6 @@
 #[cfg(test)]
 mod tests{
-    use crate::coffe_machine::coffe_machine::CustomerOrder;
-    use crate::coffe_machine::coffe_machine::DrinkType;
-    use crate::coffe_machine::coffe_machine::process_order;
+    use crate::coffe_machine::coffee_machine::{CustomerOrder, DrinkType, process_message, process_order};
 
     #[test]
     fn test_coffee_no_sugar() {
@@ -17,5 +15,10 @@ mod tests{
     #[test]
     fn test_chocolate_two_sugars() {
         assert_eq!("H:2:0", process_order(CustomerOrder::new(DrinkType::Chocolate, 2)));
+    }
+
+    #[test]
+    fn test_user_message() {
+        assert_eq!("M:my own shiny message", process_message("my own shiny message".to_owned()));
     }
 }
