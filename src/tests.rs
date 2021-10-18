@@ -11,11 +11,11 @@ mod tests{
 
     #[test]
     fn test_tea_one_sugar() {
-        assert_eq!("T:1:1", process_order(CustomerOrder::new(DrinkType::Tea, 1)));
+        assert_eq!("T:1:0", process_order(CustomerOrder::new(DrinkType::Tea, 1)));
     }
 
     #[test]
     fn test_chocolate_two_sugars() {
-        assert_eq!("H:2:1", process_order(CustomerOrder::new(DrinkType::Chocolate, 2)));
+        assert_eq!("H:2:0", process_order(CustomerOrder::new(DrinkType::Chocolate, 2)));
     }
 }
