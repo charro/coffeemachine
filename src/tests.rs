@@ -6,6 +6,16 @@ mod tests{
 
     #[test]
     fn test_coffee_no_sugar() {
-        assert_eq!("C:0:0", process_order(CustomerOrder::new(DrinkType::Coffee, 0)));
+        assert_eq!("C::", process_order(CustomerOrder::new(DrinkType::Coffee, 0)));
+    }
+
+    #[test]
+    fn test_tea_one_sugar() {
+        assert_eq!("T:1:1", process_order(CustomerOrder::new(DrinkType::Tea, 1)));
+    }
+
+    #[test]
+    fn test_chocolate_two_sugars() {
+        assert_eq!("H:2:1", process_order(CustomerOrder::new(DrinkType::Chocolate, 2)));
     }
 }
