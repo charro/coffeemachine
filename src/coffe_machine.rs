@@ -1,4 +1,5 @@
 pub mod coffee_machine {
+    use crate::price_manager::price_manager::check_missing_money_for_product;
 
     #[derive(Copy, Clone, Eq, Hash, PartialEq)]
     pub enum DrinkType {
@@ -18,15 +19,17 @@ pub mod coffee_machine {
         }
     }
 
-    pub fn process_message(message: String) -> String {
-        format!("M:{}", message)
-    }
-
     pub fn process_order_with_money(order: CustomerOrder, money: f32) -> String {
-        "".to_owned()
+        let missing_money = check_missing_money_for_product(order.drink_type, money);
+
+        if missing_money > 0.0 {
+            process_message(format!("Missing {} euros", missing_money))
+        }
+        else {
+            process_order(order)
+        }
     }
 
-    // Private Methods
     pub fn process_order(order: CustomerOrder) -> String {
         let drink_code = get_drink_code(order.drink_type);
         let sugars = get_sugars(order.sugars);
@@ -35,6 +38,11 @@ pub mod coffee_machine {
         format!("{}:{}:{}", drink_code, sugars, spoon)
     }
 
+    pub fn process_message(message: String) -> String {
+        format!("M:{}", message)
+    }
+
+    // Private Methods
     fn get_drink_code(drink_type: DrinkType) -> &'static str {
         match drink_type {
             DrinkType::Tea => "T",
