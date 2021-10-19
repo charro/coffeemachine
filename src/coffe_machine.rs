@@ -32,8 +32,8 @@ pub mod coffee_machine {
 
     pub fn process_order(order: CustomerOrder) -> String {
         let drink_code = get_drink_code(order.drink_type);
-        let sugars = get_sugars(order.sugars);
-        let spoon = get_spoon(order.sugars);
+        let sugars = get_sugars_code(order.sugars);
+        let spoon = get_spoon_code(order.sugars);
 
         format!("{}:{}:{}", drink_code, sugars, spoon)
     }
@@ -51,14 +51,14 @@ pub mod coffee_machine {
         }
     }
 
-    fn get_sugars(sugars: u8) -> String {
+    fn get_sugars_code(sugars: u8) -> String {
         match sugars {
             0 => "".to_owned(),
             _ => format!("{}", sugars)
         }
     }
 
-    fn get_spoon(sugars: u8) -> &'static str {
+    fn get_spoon_code(sugars: u8) -> &'static str {
         match sugars {
             0 => "",
             _ => "0"
