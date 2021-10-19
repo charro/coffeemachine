@@ -2,7 +2,7 @@
 mod tests{
     use approx::assert_relative_eq;
 
-    use crate::coffe_machine::coffee_machine::{CustomerOrder, DrinkType, process_message, process_order};
+    use crate::coffe_machine::coffee_machine::{CustomerOrder, DrinkType, process_message, process_order, process_order_with_money};
     use crate::price_manager::price_manager::check_missing_money_for_product;
 
     //Coffee Machine
@@ -24,6 +24,21 @@ mod tests{
     #[test]
     fn test_user_message() {
         assert_eq!("M:my own shiny message", process_message("my own shiny message".to_owned()));
+    }
+
+    #[test]
+    fn test_accept_order_with_enough_money() {
+        assert_eq!("H:2:0", process_order_with_money(CustomerOrder::new(DrinkType::Chocolate, 2), 0.7));
+    }
+
+    #[test]
+    fn test_accept_order_with_exact_money() {
+        assert_eq!("H:2:0", process_order_with_money(CustomerOrder::new(DrinkType::Chocolate, 2), 0.5));
+    }
+
+    #[test]
+    fn test_reject_order_with_not_enough_money() {
+        assert_eq!("M:Missing 0.4 euros", process_order_with_money(CustomerOrder::new(DrinkType::Chocolate, 2), 0.1));
     }
 
     // Price Manager
