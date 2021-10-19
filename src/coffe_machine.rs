@@ -1,5 +1,6 @@
 pub mod coffee_machine {
 
+    #[derive(Copy, Clone, Eq, Hash, PartialEq)]
     pub enum DrinkType {
         Tea,
         Coffee,
@@ -17,6 +18,15 @@ pub mod coffee_machine {
         }
     }
 
+    pub fn process_message(message: String) -> String {
+        format!("M:{}", message)
+    }
+
+    pub fn process_order_with_money(order: CustomerOrder, money: f32) -> String {
+        "".to_owned()
+    }
+
+    // Private Methods
     pub fn process_order(order: CustomerOrder) -> String {
         let drink_code = get_drink_code(order.drink_type);
         let sugars = get_sugars(order.sugars);
@@ -25,11 +35,6 @@ pub mod coffee_machine {
         format!("{}:{}:{}", drink_code, sugars, spoon)
     }
 
-    pub fn process_message(message: String) -> String {
-        format!("M:{}", message)
-    }
-
-    // Private Methods
     fn get_drink_code(drink_type: DrinkType) -> &'static str {
         match drink_type {
             DrinkType::Tea => "T",

@@ -1,7 +1,11 @@
 #[cfg(test)]
 mod tests{
-    use crate::coffe_machine::coffee_machine::{CustomerOrder, DrinkType, process_message, process_order};
+    use approx::assert_relative_eq;
 
+    use crate::coffe_machine::coffee_machine::{CustomerOrder, DrinkType, process_message, process_order};
+    use crate::price_manager::price_manager::check_missing_money_for_product;
+
+    //Coffee Machine
     #[test]
     fn test_coffee_no_sugar() {
         assert_eq!("C::", process_order(CustomerOrder::new(DrinkType::Coffee, 0)));
@@ -21,4 +25,21 @@ mod tests{
     fn test_user_message() {
         assert_eq!("M:my own shiny message", process_message("my own shiny message".to_owned()));
     }
+
+    // Price Manager
+    #[test]
+    fn test_exact_price_for_chocolate() {
+        assert_eq!(0.0, check_missing_money_for_product(DrinkType::Chocolate, 0.5));
+    }
+
+    #[test]
+    fn test_missing_money_for_chocolate() {
+        assert_relative_eq!(0.2, check_missing_money_for_product(DrinkType::Chocolate, 0.3));
+    }
+
+    #[test]
+    fn test_excess_of_money_for_chocolate() {
+        assert_eq!(0.0, check_missing_money_for_product(DrinkType::Chocolate, 0.70));
+    }
+
 }
