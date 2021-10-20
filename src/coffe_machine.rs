@@ -5,17 +5,29 @@ pub mod coffee_machine {
     pub enum DrinkType {
         Tea,
         Coffee,
-        Chocolate
+        Chocolate,
+        OrangeJuice
     }
 
     pub struct CustomerOrder {
         drink_type: DrinkType,
-        sugars: u8
+        sugars: u8,
+        extra_hot: bool
     }
 
     impl CustomerOrder {
-        pub fn new(drink_type: DrinkType, sugars: u8) -> CustomerOrder {
-            CustomerOrder { drink_type, sugars }
+        pub fn new(drink_type: DrinkType) -> CustomerOrder {
+            CustomerOrder { drink_type, sugars: 0, extra_hot: false }
+        }
+
+        pub fn with_sugar(mut self, sugar: u8) -> CustomerOrder {
+            self.sugars = sugar;
+            self
+        }
+
+        pub fn extra_hot(mut self, hot: bool) -> CustomerOrder {
+            self.extra_hot = hot;
+            self
         }
     }
 
@@ -47,7 +59,8 @@ pub mod coffee_machine {
         match drink_type {
             DrinkType::Tea => "T",
             DrinkType::Coffee => "C",
-            DrinkType::Chocolate => "H"
+            DrinkType::Chocolate => "H",
+            DrinkType::OrangeJuice => "O"
         }
     }
 
