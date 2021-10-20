@@ -8,6 +8,7 @@ pub mod price_manager {
             (DrinkType::Tea, 0.4),
             (DrinkType::Coffee, 0.6),
             (DrinkType::Chocolate, 0.5),
+            (DrinkType::OrangeJuice, 0.6),
         ].iter().copied().collect();
     }
 

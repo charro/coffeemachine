@@ -25,8 +25,8 @@ pub mod coffee_machine {
             self
         }
 
-        pub fn extra_hot(mut self, hot: bool) -> CustomerOrder {
-            self.extra_hot = hot;
+        pub fn extra_hot(mut self) -> CustomerOrder {
+            self.extra_hot = true;
             self
         }
     }
@@ -43,7 +43,7 @@ pub mod coffee_machine {
     }
 
     pub fn process_order(order: CustomerOrder) -> String {
-        let drink_code = get_drink_code(order.drink_type);
+        let drink_code = get_drink_code(&order);
         let sugars = get_sugars_code(order.sugars);
         let spoon = get_spoon_code(order.sugars);
 
@@ -55,12 +55,21 @@ pub mod coffee_machine {
     }
 
     // Private Methods
-    fn get_drink_code(drink_type: DrinkType) -> &'static str {
-        match drink_type {
+    fn get_drink_code(order: &CustomerOrder) -> String {
+        let drink_code = match order.drink_type {
             DrinkType::Tea => "T",
             DrinkType::Coffee => "C",
             DrinkType::Chocolate => "H",
             DrinkType::OrangeJuice => "O"
+        };
+
+        format!("{}{}", drink_code, get_extra_hot_code(order.extra_hot))
+    }
+
+    fn get_extra_hot_code(extra_hot: bool) -> &'static str {
+        match extra_hot {
+            true => "h",
+            false => ""
         }
     }
 

@@ -31,9 +31,19 @@ mod tests{
         assert_eq!("O::", process_order(CustomerOrder::new(DrinkType::OrangeJuice).with_sugar(0)));
     }
 
+    #[test]
+    fn test_tea_two_sugars_extra_hot() {
+        assert_eq!("Th:2:0", process_order(CustomerOrder::new(DrinkType::Tea).with_sugar(2).extra_hot()));
+    }
+
+    #[test]
+    fn test_chocolate_no_sugar_extra_hot() {
+        assert_eq!("Hh::", process_order(CustomerOrder::new(DrinkType::Chocolate).extra_hot()));
+    }
+
     // Coffee Machine: Orders with money
     #[test]
-    fn test_accept_order_with_enough_money() {
+    fn test_accept_order_with_more_than_enough_money() {
         assert_eq!("H:2:0", process_order_with_money(CustomerOrder::new(DrinkType::Chocolate).with_sugar(2), 0.7));
     }
 
@@ -63,6 +73,9 @@ mod tests{
         assert_eq!(0.0, check_missing_money_for_product(DrinkType::Chocolate, 0.70));
     }
 
-
+    #[test]
+    fn test_exact_money_for_orange_juice() {
+        assert_eq!(0.0, check_missing_money_for_product(DrinkType::OrangeJuice, 0.60));
+    }
 
 }
