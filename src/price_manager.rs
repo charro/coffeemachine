@@ -23,4 +23,5 @@ pub mod price_manager {
             return 0.0;
         }
     }
+
 }

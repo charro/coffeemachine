@@ -1,5 +1,6 @@
 pub mod coffee_machine {
-    use crate::price_manager::price_manager::check_missing_money_for_product;
+    use crate::price_manager::price_manager::{check_missing_money_for_product, DRINK_PRICES};
+    use std::collections::HashMap;
 
     #[derive(Copy, Clone, Eq, Hash, PartialEq)]
     pub enum DrinkType {
@@ -13,6 +14,11 @@ pub mod coffee_machine {
         drink_type: DrinkType,
         sugars: u8,
         extra_hot: bool
+    }
+
+    pub struct CoffeeMachine {
+        sold_drinks: HashMap<DrinkType, u32>,
+        money_earned: f32
     }
 
     impl CustomerOrder {
@@ -31,23 +37,47 @@ pub mod coffee_machine {
         }
     }
 
-    pub fn process_order_with_money(order: CustomerOrder, money: f32) -> String {
-        let missing_money = check_missing_money_for_product(order.drink_type, money);
+    impl CoffeeMachine {
 
-        if missing_money > 0.0 {
-            process_message(format!("Missing {} euros", missing_money))
+        pub fn new() -> CoffeeMachine {
+            CoffeeMachine { sold_drinks: HashMap::new(), money_earned: 0.0 }
         }
-        else {
-            process_order(order)
+
+        pub fn process_order_with_money(&mut self, order: CustomerOrder, money: f32) -> String {
+            let missing_money = check_missing_money_for_product(order.drink_type, money);
+
+            if missing_money > 0.0 {
+                process_message(format!("Missing {} euros", missing_money))
+            } else {
+                self.process_order(order)
+            }
         }
-    }
 
-    pub fn process_order(order: CustomerOrder) -> String {
-        let drink_code = get_drink_code(&order);
-        let sugars = get_sugars_code(order.sugars);
-        let spoon = get_spoon_code(order.sugars);
+        pub fn process_order(&mut self, order: CustomerOrder) -> String {
+            let drink_code = get_drink_code(&order);
+            let sugars = get_sugars_code(order.sugars);
+            let spoon = get_spoon_code(order.sugars);
 
-        format!("{}:{}:{}", drink_code, sugars, spoon)
+            self.register_order(order);
+            format!("{}:{}:{}", drink_code, sugars, spoon)
+        }
+
+        pub fn get_total_money_sold(&self) -> f32 {
+            self.money_earned
+        }
+
+        pub fn get_total_amount_sold(&self, drink_type:DrinkType) -> u32 {
+            self.sold_drinks.get(&drink_type).unwrap_or(&0).clone()
+        }
+
+        fn register_order(&mut self, order: CustomerOrder) {
+            let price = DRINK_PRICES.get(&order.drink_type).unwrap_or(&0.0);
+            self.money_earned = self.money_earned + price;
+
+            let amount_sold = self.sold_drinks.get(&order.drink_type).unwrap_or(&0);
+            self.sold_drinks.insert(order.drink_type, amount_sold + 1);
+        }
+
     }
 
     pub fn process_message(message: String) -> String {
