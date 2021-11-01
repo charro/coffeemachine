@@ -4,7 +4,10 @@ pub mod coffee_machine {
     use std::collections::HashMap;
     use std::fmt;
 
-    #[derive(Copy, Clone, Eq, Hash, IntoEnumIterator, PartialEq)]
+    #[cfg(test)]
+    use mockall::{automock};
+
+    #[derive(Copy, Clone, Debug, Eq, Hash, IntoEnumIterator, PartialEq)]
     pub enum DrinkType {
         Tea,
         Coffee,
@@ -32,6 +35,12 @@ pub mod coffee_machine {
     pub struct CoffeeMachine {
         pub sold_drinks: HashMap<DrinkType, u32>,
         pub money_earned: f32
+    }
+
+    #[cfg_attr(test, automock)]
+    pub trait BeverageQuantityChecker {
+        fn is_empty(drink_type: DrinkType) -> bool;
+        fn foo();
     }
 
     impl CustomerOrder {
@@ -87,7 +96,7 @@ pub mod coffee_machine {
             let price = DRINK_PRICES.get(&order.drink_type).unwrap_or(&0.0);
             self.money_earned = self.money_earned + price;
 
-            let amount_sold = self.sold_drinks.get(&order.drink_type).unwrap_or(&0);
+            let amount_sold = self.sold_drinks.get(&order.drink_type).unwrap_or(&0).to_owned();
             self.sold_drinks.insert(order.drink_type, amount_sold + 1);
         }
 

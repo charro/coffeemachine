@@ -2,10 +2,13 @@
 mod tests{
     use approx::assert_relative_eq;
 
-    use crate::coffe_machine::coffee_machine::{CoffeeMachine, CustomerOrder, DrinkType, process_message};
+    use crate::coffe_machine::coffee_machine::*;
     use crate::price_manager::price_manager::check_missing_money_for_product;
     use std::collections::HashMap;
     use crate::printer::printer::generate_sales_report;
+
+    #[cfg(test)]
+    use mockall::{mock, predicate::eq};
 
     //Coffee Machine: Basic Orders
     #[test]
@@ -119,4 +122,19 @@ mod tests{
         assert_eq!("SALES REPORT\nTea: 2\nCoffee: 4\nChocolate: 0\nOrangeJuice: 0\nTotal Money: 33.6", generate_sales_report(&coffee_machine))
     }
 
+    // Shortage Checking tests
+    #[test]
+    fn test_beverage_shortages() {
+        let mut mock = MockBeverageQuantityChecker::new();
+        mock.expect_foo()
+            .return_const("Poa");
+
+        mock.expect_is_empty()
+            .with(eq(4))
+            .times(1)
+            .returning(|x| x + 1);
+
+        assert_eq!(true, mock.expect_is_empty(DrinkType::Chocolate));
+        println!("Paco");
+    }
 }

@@ -9,3 +9,6 @@ edition = "2018"
 approx = "0.5.0"
 enum-iterator = "0.7.0"
 lazy_static = "1.4.0"
+
+[dev-dependencies]
+mockall = "0.10.2"
