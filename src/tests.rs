@@ -4,6 +4,8 @@ mod tests{
 
     use crate::coffe_machine::coffee_machine::{CoffeeMachine, CustomerOrder, DrinkType, process_message};
     use crate::price_manager::price_manager::check_missing_money_for_product;
+    use std::collections::HashMap;
+    use crate::printer::printer::generate_sales_report;
 
     //Coffee Machine: Basic Orders
     #[test]
@@ -26,7 +28,6 @@ mod tests{
 
     #[test]
     fn test_user_message() {
-        let mut coffee_machine = CoffeeMachine::new();
         assert_eq!("M:my own shiny message", process_message("my own shiny message".to_owned()));
     }
 
@@ -103,6 +104,19 @@ mod tests{
     #[test]
     fn test_exact_money_for_orange_juice() {
         assert_eq!(0.0, check_missing_money_for_product(DrinkType::OrangeJuice, 0.60));
+    }
+
+    // Printer tests
+    #[test]
+    fn test_print_a_sales_report() {
+        let sold_drinks: HashMap<DrinkType, u32> = [
+            (DrinkType::Tea, 2),
+            (DrinkType::Coffee, 4)
+        ].iter().copied().collect();
+
+        let coffee_machine = CoffeeMachine { sold_drinks, money_earned: 33.60 };
+
+        assert_eq!("SALES REPORT\nTea: 2\nCoffee: 4\nChocolate: 0\nOrangeJuice: 0\nTotal Money: 33.6", generate_sales_report(&coffee_machine))
     }
 
 }

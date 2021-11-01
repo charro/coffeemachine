@@ -1,13 +1,26 @@
 pub mod coffee_machine {
     use crate::price_manager::price_manager::{check_missing_money_for_product, DRINK_PRICES};
+    use enum_iterator::IntoEnumIterator;
     use std::collections::HashMap;
+    use std::fmt;
 
-    #[derive(Copy, Clone, Eq, Hash, PartialEq)]
+    #[derive(Copy, Clone, Eq, Hash, IntoEnumIterator, PartialEq)]
     pub enum DrinkType {
         Tea,
         Coffee,
         Chocolate,
         OrangeJuice
+    }
+
+    impl fmt::Display for DrinkType {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            match *self {
+                DrinkType::Tea => write!(f, "Tea"),
+                DrinkType::Coffee => write!(f, "Coffee"),
+                DrinkType::Chocolate => write!(f, "Chocolate"),
+                DrinkType::OrangeJuice => write!(f, "OrangeJuice"),
+            }
+        }
     }
 
     pub struct CustomerOrder {
@@ -17,8 +30,8 @@ pub mod coffee_machine {
     }
 
     pub struct CoffeeMachine {
-        sold_drinks: HashMap<DrinkType, u32>,
-        money_earned: f32
+        pub sold_drinks: HashMap<DrinkType, u32>,
+        pub money_earned: f32
     }
 
     impl CustomerOrder {
