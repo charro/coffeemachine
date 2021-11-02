@@ -8,7 +8,7 @@ mod tests{
     use crate::printer::printer::generate_sales_report;
 
     #[cfg(test)]
-    use mockall::{mock, predicate::eq};
+    use mockall::{predicate::eq};
 
     //Coffee Machine: Basic Orders
     #[test]
@@ -125,16 +125,22 @@ mod tests{
     // Shortage Checking tests
     #[test]
     fn test_beverage_shortages() {
-        let mut mock = MockBeverageQuantityChecker::new();
-        mock.expect_foo()
-            .return_const("Poa");
+        let mut quantity_checker = MockBeverageQuantityChecker::new();
+        quantity_checker.expect_is_empty()
+            .with(eq(DrinkType::Chocolate))
+            .return_const(true);
 
-        mock.expect_is_empty()
-            .with(eq(4))
+        assert_eq!(true, quantity_checker.is_empty(DrinkType::Chocolate));
+    }
+
+    #[test]
+    fn test_email_notifier() {
+        let mut email_notifier = MockEmailNotifier::new();
+        email_notifier.expect_notify_missing_drink()
+            .with(eq(DrinkType::Chocolate))
             .times(1)
-            .returning(|x| x + 1);
+            .return_const(());
 
-        assert_eq!(true, mock.expect_is_empty(DrinkType::Chocolate));
-        println!("Paco");
+        email_notifier.notify_missing_drink(DrinkType::Chocolate);
     }
 }

@@ -39,8 +39,12 @@ pub mod coffee_machine {
 
     #[cfg_attr(test, automock)]
     pub trait BeverageQuantityChecker {
-        fn is_empty(drink_type: DrinkType) -> bool;
-        fn foo();
+        fn is_empty(&self, drink_type: DrinkType) -> bool;
+    }
+
+    #[cfg_attr(test, automock)]
+    pub trait EmailNotifier {
+        fn notify_missing_drink(&self, drink_type: DrinkType);
     }
 
     impl CustomerOrder {
