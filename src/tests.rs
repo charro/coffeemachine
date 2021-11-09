@@ -13,19 +13,19 @@ mod tests{
     //Coffee Machine: Basic Orders
     #[test]
     fn test_coffee_no_sugar() {
-        let mut coffee_machine = CoffeeMachine::new();
+        let mut coffee_machine = CoffeeMachine::new(&DefaultQuantityChecker {}, &DefaultEmailNotifier {});
         assert_eq!("C::", coffee_machine.process_order(CustomerOrder::new(DrinkType::Coffee).with_sugar(0)));
     }
 
     #[test]
     fn test_tea_one_sugar() {
-        let mut coffee_machine = CoffeeMachine::new();
+        let mut coffee_machine = CoffeeMachine::new(&DefaultQuantityChecker {}, &DefaultEmailNotifier {});
         assert_eq!("T:1:0", coffee_machine.process_order(CustomerOrder::new(DrinkType::Tea).with_sugar(1)));
     }
 
     #[test]
     fn test_chocolate_two_sugars() {
-        let mut coffee_machine = CoffeeMachine::new();
+        let mut coffee_machine = CoffeeMachine::new(&DefaultQuantityChecker {}, &DefaultEmailNotifier {});
         assert_eq!("H:2:0", coffee_machine.process_order(CustomerOrder::new(DrinkType::Chocolate).with_sugar(2)));
     }
 
@@ -36,45 +36,45 @@ mod tests{
 
     #[test]
     fn test_orange_juice() {
-        let mut coffee_machine = CoffeeMachine::new();
+        let mut coffee_machine = CoffeeMachine::new(&DefaultQuantityChecker {}, &DefaultEmailNotifier {});
         assert_eq!("O::", coffee_machine.process_order(CustomerOrder::new(DrinkType::OrangeJuice).with_sugar(0)));
     }
 
     #[test]
     fn test_tea_two_sugars_extra_hot() {
-        let mut coffee_machine = CoffeeMachine::new();
+        let mut coffee_machine = CoffeeMachine::new(&DefaultQuantityChecker {}, &DefaultEmailNotifier {});
         assert_eq!("Th:2:0", coffee_machine.process_order(CustomerOrder::new(DrinkType::Tea).with_sugar(2).extra_hot()));
     }
 
     #[test]
     fn test_chocolate_no_sugar_extra_hot() {
-        let mut coffee_machine = CoffeeMachine::new();
+        let mut coffee_machine = CoffeeMachine::new(&DefaultQuantityChecker {}, &DefaultEmailNotifier {});
         assert_eq!("Hh::", coffee_machine.process_order(CustomerOrder::new(DrinkType::Chocolate).extra_hot()));
     }
 
     // Coffee Machine: Orders with money
     #[test]
     fn test_accept_order_with_more_than_enough_money() {
-        let mut coffee_machine = CoffeeMachine::new();
+        let mut coffee_machine = CoffeeMachine::new(&DefaultQuantityChecker {}, &DefaultEmailNotifier {});
         assert_eq!("H:2:0", coffee_machine.process_order_with_money(CustomerOrder::new(DrinkType::Chocolate).with_sugar(2), 0.7));
     }
 
     #[test]
     fn test_accept_order_with_exact_money() {
-        let mut coffee_machine = CoffeeMachine::new();
+        let mut coffee_machine = CoffeeMachine::new(&DefaultQuantityChecker {}, &DefaultEmailNotifier {});
         assert_eq!("H:2:0", coffee_machine.process_order_with_money(CustomerOrder::new(DrinkType::Chocolate).with_sugar(2), 0.5));
     }
 
     #[test]
     fn test_reject_order_with_not_enough_money() {
-        let mut coffee_machine = CoffeeMachine::new();
+        let mut coffee_machine = CoffeeMachine::new(&DefaultQuantityChecker {}, &DefaultEmailNotifier {});
         assert_eq!("M:Missing 0.4 euros", coffee_machine.process_order_with_money(CustomerOrder::new(DrinkType::Chocolate).with_sugar(2), 0.1));
     }
 
     // Coffee Machine: Orders that change state
     #[test]
     fn test_make_some_orders_and_check_resulting_money_earned() {
-        let mut coffee_machine = CoffeeMachine::new();
+        let mut coffee_machine = CoffeeMachine::new(&DefaultQuantityChecker {}, &DefaultEmailNotifier {});
         coffee_machine.process_order(CustomerOrder::new(DrinkType::Chocolate));
         coffee_machine.process_order(CustomerOrder::new(DrinkType::OrangeJuice));
         assert_relative_eq!(1.1, coffee_machine.get_total_money_sold());
@@ -82,7 +82,7 @@ mod tests{
 
     #[test]
     fn test_make_some_orders_and_check_how_many_sold_drinks() {
-        let mut coffee_machine = CoffeeMachine::new();
+        let mut coffee_machine = CoffeeMachine::new(&DefaultQuantityChecker {}, &DefaultEmailNotifier {});
         coffee_machine.process_order(CustomerOrder::new(DrinkType::Tea));
         assert_eq!(1, coffee_machine.get_total_amount_sold(DrinkType::Tea));
         assert_eq!(0, coffee_machine.get_total_amount_sold(DrinkType::Chocolate));
@@ -117,7 +117,7 @@ mod tests{
             (DrinkType::Coffee, 4)
         ].iter().copied().collect();
 
-        let coffee_machine = CoffeeMachine { sold_drinks, money_earned: 33.60 };
+        let coffee_machine = CoffeeMachine { sold_drinks, money_earned: 33.60, quantity_checker: &DefaultQuantityChecker {}, email_notifier: &DefaultEmailNotifier {} };
 
         assert_eq!("SALES REPORT\nTea: 2\nCoffee: 4\nChocolate: 0\nOrangeJuice: 0\nTotal Money: 33.6", generate_sales_report(&coffee_machine))
     }

@@ -32,9 +32,11 @@ pub mod coffee_machine {
         extra_hot: bool
     }
 
-    pub struct CoffeeMachine {
+    pub struct CoffeeMachine<'a> {
         pub sold_drinks: HashMap<DrinkType, u32>,
-        pub money_earned: f32
+        pub money_earned: f32,
+        pub quantity_checker: &'a (dyn BeverageQuantityChecker + 'a),
+        pub email_notifier: &'a (dyn EmailNotifier + 'a)
     }
 
     #[cfg_attr(test, automock)]
@@ -42,9 +44,29 @@ pub mod coffee_machine {
         fn is_empty(&self, drink_type: DrinkType) -> bool;
     }
 
+    pub struct DefaultQuantityChecker;
+
+    impl BeverageQuantityChecker for DefaultQuantityChecker {
+        fn is_empty(&self, drink_type: DrinkType) -> bool {
+            match drink_type {
+                _ => true
+            }
+        }
+    }
+
     #[cfg_attr(test, automock)]
     pub trait EmailNotifier {
         fn notify_missing_drink(&self, drink_type: DrinkType);
+    }
+
+    pub struct DefaultEmailNotifier;
+
+    impl EmailNotifier for DefaultEmailNotifier {
+        fn notify_missing_drink(&self, drink_type: DrinkType) {
+            match drink_type {
+                _ => { todo!() } // Notify
+            }
+        }
     }
 
     impl CustomerOrder {
@@ -63,10 +85,15 @@ pub mod coffee_machine {
         }
     }
 
-    impl CoffeeMachine {
+    impl <'a> CoffeeMachine <'_> {
 
-        pub fn new() -> CoffeeMachine {
-            CoffeeMachine { sold_drinks: HashMap::new(), money_earned: 0.0 }
+        pub fn new(quantity_checker: &'a dyn BeverageQuantityChecker, email_notifier: &'a dyn EmailNotifier) -> CoffeeMachine<'a> {
+            CoffeeMachine {
+                sold_drinks: HashMap::new(),
+                money_earned: 0.0,
+                quantity_checker,
+                email_notifier
+            }
         }
 
         pub fn process_order_with_money(&mut self, order: CustomerOrder, money: f32) -> String {
