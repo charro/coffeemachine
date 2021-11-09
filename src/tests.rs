@@ -10,6 +10,27 @@ mod tests{
     #[cfg(test)]
     use mockall::{predicate::eq};
 
+    pub struct DefaultQuantityChecker;
+
+    impl BeverageQuantityChecker for DefaultQuantityChecker {
+        fn is_empty(&self, drink_type: DrinkType) -> bool {
+            match drink_type {
+                _ => false
+            }
+        }
+    }
+
+    pub struct DefaultEmailNotifier;
+
+    impl EmailNotifier for DefaultEmailNotifier {
+        fn notify_missing_drink(&self, drink_type: DrinkType) {
+            match drink_type {
+                _ => { /* Notify */ }
+            }
+        }
+    }
+
+
     //Coffee Machine: Basic Orders
     #[test]
     fn test_coffee_no_sugar() {
@@ -124,23 +145,40 @@ mod tests{
 
     // Shortage Checking tests
     #[test]
-    fn test_beverage_shortages() {
+    fn test_beverage_shortage_generates_error_output() {
         let mut quantity_checker = MockBeverageQuantityChecker::new();
         quantity_checker.expect_is_empty()
             .with(eq(DrinkType::Chocolate))
             .return_const(true);
 
-        assert_eq!(true, quantity_checker.is_empty(DrinkType::Chocolate));
+        let email_notifier = DefaultEmailNotifier;
+
+        let mut coffee_machine = CoffeeMachine::new(&quantity_checker, &email_notifier);
+
+        let order_with_shortage = CustomerOrder::new(DrinkType::Chocolate);
+
+        assert_eq!("ERROR: Shortage of Chocolate", coffee_machine.process_order(order_with_shortage));
     }
 
     #[test]
-    fn test_email_notifier() {
+    fn test_beverage_shortage_sends_email() {
         let mut email_notifier = MockEmailNotifier::new();
+
+        // Will make the test fail in case notify_missing_drink(DrinkType::Chocolate) isn't called once
         email_notifier.expect_notify_missing_drink()
-            .with(eq(DrinkType::Chocolate))
+            .with(eq(DrinkType::OrangeJuice))
             .times(1)
             .return_const(());
 
-        email_notifier.notify_missing_drink(DrinkType::Chocolate);
+        let mut quantity_checker = MockBeverageQuantityChecker::new();
+        quantity_checker.expect_is_empty()
+            .with(eq(DrinkType::OrangeJuice))
+            .return_const(true);
+
+        let mut coffee_machine = CoffeeMachine::new(&quantity_checker, &email_notifier);
+
+        let order_with_shortage = CustomerOrder::new(DrinkType::OrangeJuice);
+
+        coffee_machine.process_order(order_with_shortage);
     }
 }

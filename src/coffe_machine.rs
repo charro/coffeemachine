@@ -44,29 +44,9 @@ pub mod coffee_machine {
         fn is_empty(&self, drink_type: DrinkType) -> bool;
     }
 
-    pub struct DefaultQuantityChecker;
-
-    impl BeverageQuantityChecker for DefaultQuantityChecker {
-        fn is_empty(&self, drink_type: DrinkType) -> bool {
-            match drink_type {
-                _ => true
-            }
-        }
-    }
-
     #[cfg_attr(test, automock)]
     pub trait EmailNotifier {
         fn notify_missing_drink(&self, drink_type: DrinkType);
-    }
-
-    pub struct DefaultEmailNotifier;
-
-    impl EmailNotifier for DefaultEmailNotifier {
-        fn notify_missing_drink(&self, drink_type: DrinkType) {
-            match drink_type {
-                _ => { todo!() } // Notify
-            }
-        }
     }
 
     impl CustomerOrder {
@@ -111,8 +91,13 @@ pub mod coffee_machine {
             let sugars = get_sugars_code(order.sugars);
             let spoon = get_spoon_code(order.sugars);
 
+            if self.quantity_checker.is_empty(order.drink_type) {
+                self.email_notifier.notify_missing_drink(order.drink_type);
+                return format!("ERROR: Shortage of {}", order.drink_type);
+            }
+
             self.register_order(order);
-            format!("{}:{}:{}", drink_code, sugars, spoon)
+            return format!("{}:{}:{}", drink_code, sugars, spoon);
         }
 
         pub fn get_total_money_sold(&self) -> f32 {
